@@ -104,7 +104,7 @@
     });
 
     const result = await res.json();
-    document.getElementById("notify-message").innerText = result.message || "You're on the list!";
+    document.getElementById("notify-message").innerText = result.message || "Check your email to confirm your subscription.";
   } catch (error) {
     console.error("Error submitting form:", error);
     document.getElementById("notify-message").innerText = "There was an error submitting your request.";
