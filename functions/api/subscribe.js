@@ -50,8 +50,9 @@ export async function onRequestPost(context) {
       })
     });
     if (!resendRes.ok) {
-      console.error("Failed to send confirmation email via Resend", await resendRes.text());
-      return new Response(JSON.stringify({ message: "Failed to send confirmation email. Please try again later." }), {
+      const errorText = await resendRes.text();
+      console.error("Failed to send confirmation email via Resend", errorText);
+      return new Response(JSON.stringify({ message: "Failed to send confirmation email. Please try again later.", resendError: errorText }), {
         status: 500,
         headers: { "Content-Type": "application/json" }
       });
