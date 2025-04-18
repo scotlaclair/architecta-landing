@@ -95,15 +95,21 @@
       document.getElementById('background').style.opacity = 1;
     }
     document.getElementById("notify-form").addEventListener("submit", async function(e) {
-      e.preventDefault();
-      const formData = new FormData(this);
-      const res = await fetch("/api/subscribe", {
-        method: "POST",
-        body: formData
-      });
-      const result = await res.json();
-      document.getElementById("notify-message").innerText = result.message;
+  e.preventDefault();
+  const formData = new FormData(this);
+  try {
+    const res = await fetch("/api/subscribe", {
+      method: "POST",
+      body: formData
     });
+
+    const result = await res.json();
+    document.getElementById("notify-message").innerText = result.message || "You're on the list!";
+  } catch (error) {
+    console.error("Error submitting form:", error);
+    document.getElementById("notify-message").innerText = "There was an error submitting your request.";
+  }
+});
   </script>
 </body>
 </html>
