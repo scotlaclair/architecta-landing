@@ -1,0 +1,38 @@
+# Node.js (if you ever use Vercel/Next.js)
+node_modules/
+.next/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Python agents / CLI logic (future)
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+.venv/
+env/
+venv/
+
+# VS Code workspace
+.vscode/
+*.code-workspace
+
+# OS / Editor junk
+.DS_Store
+Thumbs.db
+
+# Build / deploy artifacts
+dist/
+build/
+out/
+.cache/
+.wrangler/
+
+# Logs
+logs/
+*.log
+
+# Cloudflare config (optional if using secrets)
+wrangler.toml
