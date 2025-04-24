@@ -1,3 +1,12 @@
+<p align="center">
+  <img src="https://github.com/ScotLaClair/architecta-landing/raw/main/assets/architecta-github-banner.png" alt="Architecta Banner" />
+</p>
+<p align="center">
+  <img alt="Live" src="https://img.shields.io/badge/status-live-brightgreen" />
+  <img alt="Cloudflare" src="https://img.shields.io/badge/deployed%20on-Cloudflare-blue" />
+  <img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-yellow" />
+</p>
+
 # Architecta Landing
 
 The official launch site for **Architecta** — the AI Operating System that builds intelligent systems.
@@ -40,7 +49,7 @@ It features:
 
 ## 🌐 Live Site
 
-**https://architecta-landing.pages.dev**
+**https://architecta.ai**
 
 ---
 
@@ -56,3 +65,7 @@ It features:
 ## 📄 License
 
 MIT
+
+<p align="center">
+  <sub>© 2025 Architecta — All systems evolve. Built with 🧠 by Core.</sub>
+</p>
