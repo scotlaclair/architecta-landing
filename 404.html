@@ -76,7 +76,7 @@
     }
   </style>
 </head>
-<body onload="evolve()">
+<body >
   <div id="background"></div>
   <div id="content">
     <h1>404</h1>
@@ -84,12 +84,11 @@
     <p>The system could not locate that page.<br>Return to the Architecta homepage to continue exploring.</p>
     <a href="/" class="cta">Return to Architecta</a>
   </div>
-  <footer>&copy; 2025 Architecta. All rights reserved.</footer>
+  <footer>&copy; 2026 Architecta &middot; <a href="/privacy" style="color:#66fcf1;text-decoration:none;">Privacy</a></footer>
   <script>
-    function evolve() {
-      document.getElementById('background').style.opacity = 1;
-    }
-    window.onload = evolve;
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("background").style.opacity = "1";
+    });
   </script>
 </body>
 </html>

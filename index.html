@@ -4,15 +4,27 @@
   <meta charset="UTF-8">
   <title>Architecta</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="The AI Operating System for Building Intelligent Systems.">
+  <link rel="canonical" href="https://architecta.ai/">
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
   <style>
+    :root {
+      color-scheme: dark;
+    }
     html, body {
       margin: 0;
       padding: 0;
-      background: black;
+      background: #000000;
       color: #ffffff;
-      font-family: 'Segoe UI', sans-serif;
-      height: 100vh;
-      overflow: hidden;
+      font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+      min-height: 100vh;
+    }
+    body {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      overflow-x: hidden;
     }
     #background {
       background-image: url('./assets/phase1_teaser.jpg');
@@ -20,10 +32,10 @@
       background-position: center;
       opacity: 0;
       transition: opacity 2s ease-in;
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
+      position: fixed;
+      inset: 0;
       z-index: 0;
+      pointer-events: none;
     }
     #content {
       position: relative;
@@ -32,95 +44,403 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      height: 100vh;
       text-align: center;
+      padding: 3rem 1.25rem 4.5rem;
+      max-width: 40rem;
+      margin: 0 auto;
     }
     h1 {
-      font-size: 3.5rem;
-      margin-bottom: 0.5rem;
+      font-size: clamp(2.5rem, 6vw, 3.5rem);
+      margin: 0 0 0.5rem;
       animation: fadeIn 2s ease-in-out forwards;
     }
     h2 {
       font-weight: 300;
-      font-size: 1.2rem;
-      margin-bottom: 2rem;
+      font-size: clamp(1.05rem, 2.5vw, 1.25rem);
+      margin: 0 0 1.5rem;
       opacity: 0;
       animation: fadeIn 3s ease-in-out forwards;
-      animation-delay: 1s;
+      animation-delay: 0.6s;
+    }
+    .tagline {
+      margin: 0 0 2rem;
+      line-height: 1.6;
+      color: #e6edf3;
+    }
+    #notify-form {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      width: 100%;
+      max-width: 24rem;
+      gap: 0.85rem;
+      text-align: left;
+    }
+    .field {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.25rem;
+    }
+    label {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: #ffffff;
+    }
+    .hint {
+      display: block;
+      color: #9fb1c1;
+      font-size: 0.85rem;
+      margin-bottom: 0.15rem;
+    }
+    input[type="email"] {
+      font: inherit;
+      font-size: max(1rem, 1em);
+      min-height: 48px;
+      padding: 0.75rem 0.9rem;
+      border-radius: 6px;
+      border: 2px solid #52606d;
+      background: rgba(11, 12, 16, 0.9);
+      color: #ffffff;
+      box-sizing: border-box;
+      width: 100%;
+    }
+    input[type="email"]::placeholder {
+      color: #829ab1;
+    }
+    input:focus-visible,
+    button:focus-visible,
+    a:focus-visible {
+      outline: 3px solid #66fcf1;
+      outline-offset: 2px;
+    }
+    input:is(:user-invalid, .user-invalid-fallback) {
+      border-color: #ff6b6b;
+      background-color: rgba(65, 18, 22, 0.92);
+    }
+    input:user-valid,
+    input.user-valid-fallback {
+      border-color: #2ecc71;
+    }
+    .error-msg {
+      display: none;
+      color: #ffb4b4;
+      font-size: 0.875rem;
+      margin-top: 0.2rem;
+    }
+    input:is(:user-invalid, .user-invalid-fallback) + .error-msg {
+      display: block;
+    }
+    .honeypot {
+      position: absolute;
+      left: -9999px;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .turnstile-wrap {
+      display: flex;
+      justify-content: center;
+      min-height: 65px;
     }
     .cta {
+      font: inherit;
+      font-size: max(1rem, 1em);
+      min-height: 48px;
       background: #66fcf1;
       color: #0b0c10;
       padding: 0.8rem 1.6rem;
-      font-size: 1rem;
-      font-weight: bold;
-      border-radius: 5px;
+      font-weight: 700;
+      border-radius: 6px;
       cursor: pointer;
       text-decoration: none;
       border: none;
-      transition: background 0.3s;
+      transition: background 0.2s, opacity 0.2s;
     }
-    .cta:hover {
+    .cta:hover:not(:disabled) {
       background: #45a29e;
     }
-    footer {
-      position: absolute;
-      bottom: 1rem;
-      font-size: 0.8rem;
-      color: #888;
-      width: 100%;
+    .cta:disabled {
+      opacity: 0.65;
+      cursor: wait;
+    }
+    #notify-message {
+      margin: 0.75rem 0 0;
+      min-height: 1.5rem;
+      font-size: 0.95rem;
+      color: #66fcf1;
       text-align: center;
+    }
+    #notify-message.is-error {
+      color: #ffb4b4;
+    }
+    footer {
+      position: relative;
+      z-index: 1;
+      padding: 1.25rem 1rem 1.5rem;
+      font-size: 0.85rem;
+      color: #9fb1c1;
+      width: 100%;
+      box-sizing: border-box;
+      text-align: center;
+      margin-top: auto;
+    }
+    footer a {
+      color: #66fcf1;
+      text-decoration: none;
+    }
+    footer a:hover {
+      text-decoration: underline;
+    }
+    .visually-hidden:where(:not(:focus-within, :active)) {
+      position: absolute !important;
+      clip-path: inset(50%) !important;
+      overflow: hidden !important;
+      width: 1px !important;
+      height: 1px !important;
+      margin: -1px !important;
+      padding: 0 !important;
+      border: 0 !important;
+      white-space: nowrap !important;
     }
     @keyframes fadeIn {
       to { opacity: 1; }
     }
   </style>
 </head>
-<body onload="evolve()">
+<body>
   <div id="background"></div>
-  <div id="content">
+  <main id="content">
     <h1>Architecta</h1>
     <h2>The AI Operating System for Building Intelligent Systems</h2>
-    <p>An orchestrator of agents.<br>A builder of businesses.<br>A system that evolves itself.</p>
-    <br>
-    <form id="notify-form" method="POST" action="/api/subscribe">
-      <!-- Email Field -->
-      <input type="email" name="email" placeholder="Enter your email" required style="padding: 0.6rem; font-size: 1rem; border-radius: 4px; border: none; margin-right: 0.5rem;">
-    
-      <!-- Honeypot Field -->
-      <input type="text" name="confirm_email" style="display: none;" tabindex="-1" autocomplete="off">
-    
-      <!-- Submit -->
-      <button type="submit" class="cta">Get Notified</button>
-    </form>
-    <p id="notify-message" style="margin-top: 1rem;"></p>
-  </div>
-  <footer>&copy; 2025 Architecta. All rights reserved.</footer>
-  <script>
-    function evolve() {
-      document.getElementById('background').style.opacity = 1;
-    }
-    document.getElementById("notify-form").addEventListener("submit", async function(e) {
-  e.preventDefault();
-  const formData = new FormData(this);
-  const honeypot = formData.get("confirm_email");
-if (honeypot) {
-  console.warn("🕷️ Honeypot triggered — likely bot");
-  return;
-}
-  try {
-    const res = await fetch("/api/subscribe", {
-      method: "POST",
-      body: formData
-    });
+    <p class="tagline">An orchestrator of agents.<br>A builder of businesses.<br>A system that evolves itself.</p>
 
-    const result = await res.json();
-    document.getElementById("notify-message").innerText = result.message || "Check your email to confirm your subscription.";
-  } catch (error) {
-    console.error("Error submitting form:", error);
-    document.getElementById("notify-message").innerText = "There was an error submitting your request.";
-  }
-});
+    <form id="notify-form" method="POST" action="/api/subscribe" aria-labelledby="notify-heading">
+      <h3 id="notify-heading" class="visually-hidden">Join the Architecta waitlist</h3>
+      <div class="field">
+        <label for="email">Email address <span aria-hidden="true">*</span></label>
+        <span id="email-hint" class="hint">Format: you@example.com</span>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          required
+          autocomplete="email"
+          inputmode="email"
+          autocorrect="off"
+          autocapitalize="none"
+          spellcheck="false"
+          enterkeyhint="done"
+          pattern="^[^@\s]+@[^@\s]+\.[^@\s]{2,}$"
+          placeholder="you@example.com"
+          aria-invalid="false"
+          aria-describedby="email-hint"
+          data-error="email-error"
+        >
+        <div id="email-error" class="error-msg">
+          <span role="img" aria-label="Error">❌</span> Enter an email address in the format you@example.com.
+        </div>
+      </div>
+
+      <input
+        type="text"
+        name="confirm_email"
+        class="honeypot"
+        tabindex="-1"
+        aria-hidden="true"
+        autocomplete="off"
+      >
+
+      <div class="turnstile-wrap">
+        <div class="cf-turnstile" data-sitekey="0x4AAAAAAGCJoWghUWRolJDl" data-theme="dark"></div>
+      </div>
+
+      <button type="submit" id="submit-btn" class="cta">Get Notified</button>
+    </form>
+
+    <p id="notify-message" role="status" aria-live="polite"></p>
+  </main>
+
+  <footer>
+    &copy; 2026 Architecta &middot; SomeDad Entertainment LLC &middot; <a href="/privacy">Privacy</a>
+  </footer>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const bg = document.getElementById("background");
+      if (bg) bg.style.opacity = "1";
+
+      const form = document.getElementById("notify-form");
+      const emailInput = document.getElementById("email");
+      const submitBtn = document.getElementById("submit-btn");
+      const msgEl = document.getElementById("notify-message");
+
+      const linkError = (el, shown) => {
+        const errorId = el.dataset.error;
+        if (!errorId) return;
+        const ids = (el.getAttribute("aria-describedby") || "")
+          .split(/\s+/)
+          .filter((id) => id && id !== errorId);
+        if (shown) ids.push(errorId);
+        if (ids.length) el.setAttribute("aria-describedby", ids.join(" "));
+        else el.removeAttribute("aria-describedby");
+      };
+
+      const announcer = document.createElement("div");
+      announcer.setAttribute("aria-live", "polite");
+      announcer.classList.add("visually-hidden");
+      document.body.append(announcer);
+      let announceTimer;
+      let announcedField;
+
+      const spokenText = (node) => {
+        const copy = node.cloneNode(true);
+        copy.querySelectorAll('[aria-hidden="true"]').forEach((n) => n.remove());
+        copy.querySelectorAll('[role="img"][aria-label]').forEach((n) =>
+          n.replaceWith(`${n.getAttribute("aria-label")}: `)
+        );
+        return copy.textContent.replace(/\s+/g, " ").trim();
+      };
+
+      const announceError = (el) => {
+        const error = document.getElementById(el.dataset.error);
+        if (!error) return;
+        const label = el.labels?.[0] ? `${spokenText(el.labels[0])}: ` : "";
+        clearTimeout(announceTimer);
+        announcer.textContent = "";
+        announcedField = el;
+        announceTimer = setTimeout(() => {
+          announcer.textContent = label + spokenText(error);
+        }, 500);
+      };
+
+      const supportsUserInvalid = CSS.supports("selector(:user-invalid)");
+      const dirtyState = new WeakMap();
+      const flagged = new WeakSet();
+      const announced = new WeakSet();
+
+      const isFieldUserInvalid = (el) => {
+        if (supportsUserInvalid) return el.matches(":user-invalid");
+        return el.classList.contains("user-invalid-fallback");
+      };
+
+      const syncAria = (el, announce = false) => {
+        if (!el.matches?.("input, select, textarea") || el.classList.contains("honeypot")) return;
+        const invalid = isFieldUserInvalid(el);
+        if (invalid) {
+          if (announce && !announced.has(el)) {
+            announceError(el);
+            announced.add(el);
+          }
+          el.setAttribute("aria-invalid", "true");
+          linkError(el, true);
+          flagged.add(el);
+        } else if (flagged.has(el) || el.getAttribute("aria-invalid") !== "true") {
+          el.setAttribute("aria-invalid", "false");
+          linkError(el, false);
+          flagged.delete(el);
+          announced.delete(el);
+          if (announcedField === el) {
+            clearTimeout(announceTimer);
+            announcer.textContent = "";
+          }
+        }
+      };
+
+      emailInput.addEventListener("invalid", () => {
+        emailInput.setCustomValidity("Enter an email address in the format you@example.com.");
+        if (!supportsUserInvalid) {
+          dirtyState.set(emailInput, { hasInteracted: true, hasBlurred: true });
+          emailInput.classList.add("user-invalid-fallback");
+          emailInput.classList.remove("user-valid-fallback");
+        }
+        announced.add(emailInput);
+        syncAria(emailInput);
+      });
+
+      emailInput.addEventListener("input", () => {
+        emailInput.setCustomValidity("");
+        if (!supportsUserInvalid) {
+          const state = dirtyState.get(emailInput) || { hasInteracted: false, hasBlurred: false };
+          state.hasInteracted = true;
+          dirtyState.set(emailInput, state);
+          if (state.hasBlurred) {
+            const valid = emailInput.validity.valid;
+            emailInput.classList.toggle("user-invalid-fallback", !valid);
+            emailInput.classList.toggle("user-valid-fallback", valid);
+          }
+        }
+        syncAria(emailInput);
+      });
+
+      emailInput.addEventListener("blur", () => {
+        if (!supportsUserInvalid) {
+          const state = dirtyState.get(emailInput) || { hasInteracted: false, hasBlurred: false };
+          state.hasBlurred = true;
+          dirtyState.set(emailInput, state);
+          if (state.hasInteracted) {
+            const valid = emailInput.validity.valid;
+            emailInput.classList.toggle("user-invalid-fallback", !valid);
+            emailInput.classList.toggle("user-valid-fallback", valid);
+          }
+        }
+        syncAria(emailInput, true);
+      });
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        msgEl.textContent = "";
+        msgEl.classList.remove("is-error");
+
+        if (!form.checkValidity()) {
+          emailInput.reportValidity();
+          emailInput.focus();
+          return;
+        }
+
+        const formData = new FormData(form);
+        if (formData.get("confirm_email")) {
+          msgEl.textContent = "Check your email to confirm your subscription.";
+          return;
+        }
+
+        if (!formData.get("cf-turnstile-response")) {
+          msgEl.textContent = "Please complete the verification check before submitting.";
+          msgEl.classList.add("is-error");
+          return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Sending...";
+
+        try {
+          const res = await fetch("/api/subscribe", {
+            method: "POST",
+            body: formData
+          });
+          const result = await res.json().catch(() => ({}));
+          if (!res.ok) {
+            msgEl.textContent = result.message || "Unable to complete signup. Please try again.";
+            msgEl.classList.add("is-error");
+          } else {
+            msgEl.textContent = result.message || "Check your email to confirm your subscription.";
+            form.reset();
+            syncAria(emailInput);
+          }
+        } catch (error) {
+          console.error("Error submitting form:", error);
+          msgEl.textContent = "There was an error submitting your request.";
+          msgEl.classList.add("is-error");
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.textContent = "Get Notified";
+          if (window.turnstile?.reset) {
+            window.turnstile.reset();
+          }
+        }
+      });
+    });
   </script>
 </body>
 </html>

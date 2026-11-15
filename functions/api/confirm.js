@@ -111,19 +111,18 @@ export async function onRequestGet(context) {
     }
   </style>
 </head>
-<body onload="evolve()">
+<body >
   <div id="background"></div>
   <div id="content">
     <h1>Thank you for confirming!</h1>
     <p>Your subscription is now active.<br>Welcome to the future of intelligent systems.</p>
     <a href="/" class="cta">Return to Architecta</a>
   </div>
-  <footer>&copy; 2025 Architecta. All rights reserved.</footer>
+  <footer>&copy; 2026 Architecta &middot; <a href="/privacy" style="color:#66fcf1;text-decoration:none;">Privacy</a></footer>
   <script>
-    function evolve() {
-      document.getElementById('background').style.opacity = 1;
-    }
-    window.onload = evolve;
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("background").style.opacity = "1";
+    });
   </script>
 </body>
 </html>`, {
